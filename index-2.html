@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Codex公式情報まとめ｜初心者向けHTML資料</title>
+  <style>
+    :root {
+      --main: #111827;
+      --sub: #2563eb;
+      --bg: #f3f4f6;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #d1d5db;
+      --info-bg: #eff6ff;
+      --info-border: #2563eb;
+      --warn-bg: #fff7ed;
+      --warn-border: #f97316;
+      --danger-bg: #fef2f2;
+      --danger-border: #dc2626;
+      --success-bg: #ecfdf5;
+      --success-border: #059669;
+      --radius: 16px;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", Meiryo, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.8;
+    }
+
+    a {
+      color: var(--sub);
+      word-break: break-all;
+    }
+
+    header {
+      background: linear-gradient(135deg, #111827, #1d4ed8);
+      color: #ffffff;
+      padding: 48px 20px;
+    }
+
+    .header-inner,
+    .layout {
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(26px, 5vw, 40px);
+      line-height: 1.3;
+    }
+
+    header p {
+      max-width: 840px;
+      margin: 16px 0 0;
+      color: rgba(255,255,255,0.92);
+      font-size: 16px;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      font-size: 13px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      padding: 28px 20px 60px;
+    }
+
+    nav {
+      position: sticky;
+      top: 20px;
+      align-self: start;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+      padding: 18px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    nav h2 {
+      margin: 0 0 12px;
+      font-size: 16px;
+      color: var(--main);
+    }
+
+    nav ol {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 13px;
+    }
+
+    nav li {
+      margin-bottom: 7px;
+    }
+
+    main {
+      min-width: 0;
+    }
+
+    section {
+      margin-bottom: 24px;
+      padding: 28px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    h2 {
+      margin: 0 0 18px;
+      padding-left: 12px;
+      border-left: 6px solid var(--sub);
+      color: var(--main);
+      font-size: 24px;
+      line-height: 1.45;
+    }
+
+    h3 {
+      margin: 28px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      font-size: 18px;
+      color: var(--main);
+    }
+
+    p {
+      margin: 12px 0;
+    }
+
+    ul,
+    ol {
+      padding-left: 24px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    .summary {
+      padding: 16px 18px;
+      background: var(--info-bg);
+      border-left: 6px solid var(--info-border);
+      border-radius: 12px;
+      margin: 16px 0;
+    }
+
+    .warning {
+      padding: 16px 18px;
+      background: var(--warn-bg);
+      border-left: 6px solid var(--warn-border);
+      border-radius: 12px;
+      margin: 16px 0;
+    }
+
+    .danger {
+      padding: 16px 18px;
+      background: var(--danger-bg);
+      border-left: 6px solid var(--danger-border);
+      border-radius: 12px;
+      margin: 16px 0;
+    }
+
+    .success {
+      padding: 16px 18px;
+      background: var(--success-bg);
+      border-left: 6px solid var(--success-border);
+      border-radius: 12px;
+      margin: 16px 0;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .card {
+      padding: 16px;
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+    .card h3,
+    .card h4 {
+      margin: 0 0 8px;
+      padding: 0;
+      border: none;
+      color: var(--sub);
+      font-size: 16px;
+    }
+
+    .card p {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .flow div {
+      padding: 14px;
+      text-align: center;
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 13px;
+    }
+
+    .table-wrap {
+      margin: 18px 0;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #ffffff;
+    }
+
+    table {
+      width: 100%;
+      min-width: 720px;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      border: 1px solid var(--border);
+      vertical-align: top;
+      text-align: left;
+    }
+
+    th {
+      background: #f3f4f6;
+      color: var(--main);
+      white-space: nowrap;
+    }
+
+    code {
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: #eef2ff;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.95em;
+    }
+
+    .source-list li {
+      margin-bottom: 12px;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      padding: 30px 20px 50px;
+      font-size: 13px;
+    }
+
+    .top-link {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      width: 42px;
+      height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      background: var(--sub);
+      border-radius: 50%;
+      text-decoration: none;
+      box-shadow: var(--shadow);
+      font-weight: bold;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        display: block;
+        padding: 20px 14px 50px;
+      }
+
+      nav {
+        position: static;
+        max-height: none;
+        margin-bottom: 22px;
+      }
+
+      section {
+        padding: 22px 16px;
+      }
+
+      .flow {
+        grid-template-columns: 1fr;
+      }
+
+      table {
+        min-width: 680px;
+      }
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+      }
+
+      header {
+        background: #111827 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .layout {
+        display: block;
+        max-width: none;
+        padding: 0;
+      }
+
+      nav,
+      .top-link {
+        display: none;
+      }
+
+      section {
+        box-shadow: none;
+        border-radius: 0;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+
+<body id="top">
+<header>
+  <div class="header-inner">
+    <h1>Codex公式情報まとめ</h1>
+    <p>
+      このHTMLは、OpenAI公式ページ・OpenAI Developers公式ドキュメント・OpenAI Help Center公式記事のみをもとに、Codexの概要、使い方、利用形態、料金・使用量、安全面の考え方を初心者向けに整理した資料です。
+    </p>
+    <div class="badge-row">
+      <span class="badge">公式情報のみ</span>
+      <span class="badge">初心者向け</span>
+      <span class="badge">GitHub Pages対応</span>
+      <span class="badge">最終確認日：2026年5月25日</span>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav aria-label="目次">
+    <h2>目次</h2>
+    <ol>
+      <li><a href="#overview">Codexとは</a></li>
+      <li><a href="#what-can-do">Codexでできること</a></li>
+      <li><a href="#clients">利用できる場所</a></li>
+      <li><a href="#workflow">基本の使い方</a></li>
+      <li><a href="#plan-mode">プランモード的な使い方</a></li>
+      <li><a href="#plans">対応プランと使用量</a></li>
+      <li><a href="#auth">ログイン方法</a></li>
+      <li><a href="#security">安全面の注意</a></li>
+      <li><a href="#best-practices">公式推奨の使い方</a></li>
+      <li><a href="#beginner">初心者向けおすすめ運用</a></li>
+      <li><a href="#sources">公式リソース一覧</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <section id="overview">
+      <h2>1. Codexとは</h2>
+      <div class="summary">
+        <strong>一言でいうと：</strong><br>
+        Codexは、コードを書く・読む・直す・レビューする・出荷する作業を支援するOpenAIのAIコーディングエージェントです。
+      </div>
+
+      <p>
+        OpenAI公式ページでは、Codexはエンジニアリング作業を加速するAIコーディングパートナーとして説明されています。
+        機能開発、リファクタリング、レビュー、リリースなど、実際の開発作業を支援することを目的としています。
+      </p>
+
+      <p>
+        OpenAI Developers公式ドキュメントでは、Codexはソフトウェア開発向けのコーディングエージェントであり、コードを書く、質問に答える、テストを実行する、変更を提案する、Pull Requestを作るといった作業に使えると説明されています。
+      </p>
+    </section>
+
+    <section id="what-can-do">
+      <h2>2. Codexでできること</h2>
+      <p>
+        Codexは単なるコード補完ツールではなく、開発作業全体を支援するエージェントです。
+        公式情報をもとに整理すると、主な使い方は以下の通りです。
+      </p>
+
+      <div class="cards">
+        <div class="card">
+          <h3>コードを書く</h3>
+          <p>新しい機能の実装、既存コードの修正、HTML/CSS/JavaScriptなどの作成を支援します。</p>
+        </div>
+        <div class="card">
+          <h3>コードを読む</h3>
+          <p>既存のプロジェクトや知らないコードの構造を理解する手助けをします。</p>
+        </div>
+        <div class="card">
+          <h3>バグを直す</h3>
+          <p>エラー原因の調査、修正案の提示、必要に応じたコード変更を支援します。</p>
+        </div>
+        <div class="card">
+          <h3>テストを実行する</h3>
+          <p>ローカル環境やクラウド環境で、テストや検証を行う作業を支援します。</p>
+        </div>
+        <div class="card">
+          <h3>レビューする</h3>
+          <p>変更内容を確認し、問題や改善点を見つける作業を支援します。</p>
+        </div>
+        <div class="card">
+          <h3>出荷を助ける</h3>
+          <p>Pull Request、リリース、移行作業など、開発成果を届けるまでの工程を支援します。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="clients">
+      <h2>3. Codexを使える場所</h2>
+      <p>
+        Codexは、複数の場所から利用できます。作業内容や使いやすさに応じて、CLI、IDE拡張、Codex Web、Codexアプリなどを使い分けます。
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>利用形態</th>
+              <th>概要</th>
+              <th>向いている作業</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Codex CLI</td>
+              <td>ターミナルからローカルでCodexを使う方法です。選択したディレクトリ内のコードを読み、変更し、実行できます。</td>
+              <td>ローカル開発、ターミナル操作、コード修正、検証</td>
+            </tr>
+            <tr>
+              <td>Codex IDE extension</td>
+              <td>VS Code、Cursor、WindsurfなどのIDE内でCodexを使う方法です。</td>
+              <td>エディタ横での相談、ファイル編集、コード理解</td>
+            </tr>
+            <tr>
+              <td>Codex Web / Cloud</td>
+              <td>クラウド環境でCodexに作業を任せる方法です。バックグラウンドや並列タスクに使えます。</td>
+              <td>複数タスク、時間のかかる作業、GitHub連携</td>
+            </tr>
+            <tr>
+              <td>Codex App</td>
+              <td>macOSやWindowsで使えるアプリ版です。プロジェクト横断の作業やレビューに向いています。</td>
+              <td>ローカル作業、プロジェクト管理、変更確認</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="workflow">
+      <h2>4. 基本の使い方</h2>
+      <p>
+        初心者は、いきなり大きな変更を任せるより、小さな対象ファイルと明確な目的を指定するのが安全です。
+      </p>
+
+      <div class="flow" aria-label="Codex基本フロー">
+        <div>1. 対象を指定</div>
+        <div>2. 目的を伝える</div>
+        <div>3. 制約を伝える</div>
+        <div>4. 変更を確認</div>
+        <div>5. テスト・公開</div>
+      </div>
+
+      <div class="summary">
+        <strong>初心者向けの指示例：</strong><br>
+        <code>対象は index.html のみです。スマホ表示を読みやすくしてください。本文の意味は変えず、CSS中心に改善してください。</code>
+      </div>
+
+      <p>
+        Codexに依頼するときは、「何を」「どこまで」「何を変えないか」を明確にすると、意図しない変更を減らせます。
+      </p>
+    </section>
+
+    <section id="plan-mode">
+      <h2>5. プランモード的な使い方</h2>
+      <p>
+        Codexの公式ベストプラクティスでは、複雑・曖昧・説明しづらい作業では、先に計画を立てさせる使い方が有効とされています。
+        実装前に方針を確認することで、意図しない変更や手戻りを減らしやすくなります。
+      </p>
+
+      <div class="summary">
+        <strong>考え方：</strong><br>
+        いきなりコードを書かせるのではなく、まず「どこをどう直すか」を説明させてから実行します。
+      </div>
+
+      <h3>使い分け</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>作業内容</th>
+              <th>おすすめ</th>
+              <th>理由</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>誤字修正</td>
+              <td>通常の依頼</td>
+              <td>範囲が狭いため、計画は不要なことが多いです。</td>
+            </tr>
+            <tr>
+              <td>HTML全体の改善</td>
+              <td>先に計画</td>
+              <td>構成・CSS・スマホ表示など複数要素が絡むためです。</td>
+            </tr>
+            <tr>
+              <td>複数ファイルの修正</td>
+              <td>先に計画</td>
+              <td>影響範囲を確認してから作業した方が安全です。</td>
+            </tr>
+            <tr>
+              <td>公開前チェック</td>
+              <td>先に計画</td>
+              <td>個人情報、公開リスク、表示崩れを確認しやすくなります。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="plans">
+      <h2>6. 対応プランと使用量</h2>
+      <p>
+        OpenAI Help Centerでは、Codexは対象のChatGPTプランに含まれると案内されています。
+        使用量の扱いはプランやタスクの大きさ、複雑さ、利用形態によって変わります。
+      </p>
+
+      <div class="warning">
+        <strong>注意：</strong><br>
+        Codexの使用量やレート制限は変更される可能性があります。最新の対象プラン、使用上限、クレジット情報は必ずOpenAI公式ヘルプと料金ページで確認してください。
+      </div>
+
+      <p>
+        公式ヘルプでは、Codexの使用量はタスクの大きさ、複雑さ、実行場所などによって変わると説明されています。
+        そのため、「1回の依頼で必ず何％消費する」といった固定の考え方ではありません。
+      </p>
+    </section>
+
+    <section id="auth">
+      <h2>7. ログイン方法</h2>
+      <p>
+        OpenAI Developers公式ドキュメントでは、CodexでOpenAIモデルを使うログイン方法として、ChatGPTアカウントでのサインインとAPIキーでのサインインが説明されています。
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ログイン方法</th>
+              <th>概要</th>
+              <th>補足</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>ChatGPTでサインイン</td>
+              <td>ChatGPTプランの利用権限を使ってCodexにアクセスします。</td>
+              <td>Codex CloudではChatGPTでのサインインが必要とされています。</td>
+            </tr>
+            <tr>
+              <td>APIキーでサインイン</td>
+              <td>API利用に基づく方法です。</td>
+              <td>CLIやIDE拡張では、複数のサインイン方法がサポートされています。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="security">
+      <h2>8. 安全面の注意</h2>
+      <p>
+        Codexはコードやファイルを読んだり、変更したり、実行したりできるため、便利な反面、扱う情報には注意が必要です。
+      </p>
+
+      <div class="danger">
+        <strong>公開・共有前に確認すること：</strong>
+        <ul>
+          <li>APIキー、トークン、パスワードを含めない</li>
+          <li>個人情報を含めない</li>
+          <li>社内情報や業務手順をPublicリポジトリに置かない</li>
+          <li>Codexに触らせる対象ファイルを必要最小限にする</li>
+          <li>実行前・反映前に変更内容を確認する</li>
+        </ul>
+      </div>
+
+      <p>
+        公式ドキュメントでは、設定、認証、管理者コントロール、データ取り扱いの違いなどが案内されています。
+        仕事や社内情報を扱う場合は、所属組織のルールを優先してください。
+      </p>
+    </section>
+
+    <section id="best-practices">
+      <h2>9. 公式推奨の使い方</h2>
+      <p>
+        OpenAI DevelopersのCodexベストプラクティスでは、Codexを効果的に使うための考え方として、明確な指示、計画、検証、設定、スキル、MCPなどが扱われています。
+      </p>
+
+      <div class="cards">
+        <div class="card">
+          <h3>範囲を絞る</h3>
+          <p>対象ファイルや作業範囲を明確にします。</p>
+        </div>
+        <div class="card">
+          <h3>目的を明確にする</h3>
+          <p>何を達成したいのかを先に伝えます。</p>
+        </div>
+        <div class="card">
+          <h3>変更前に計画させる</h3>
+          <p>複雑な作業では、先に方針を出させます。</p>
+        </div>
+        <div class="card">
+          <h3>検証する</h3>
+          <p>変更後に表示確認やテストを行います。</p>
+        </div>
+        <div class="card">
+          <h3>秘密情報を守る</h3>
+          <p>APIキーや社内情報を公開しないようにします。</p>
+        </div>
+        <div class="card">
+          <h3>GitHubと組み合わせる</h3>
+          <p>Issue、Branch、Pull Request、Pagesなどと組み合わせると管理しやすくなります。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="beginner">
+      <h2>10. 初心者向けおすすめ運用</h2>
+      <p>
+        HTML作成やGitHub Pages公開を中心に使う場合は、いきなり大きな自動化を狙うより、次の流れが安全です。
+      </p>
+
+      <div class="flow" aria-label="初心者向け運用フロー">
+        <div>HTML作成</div>
+        <div>GitHub保存</div>
+        <div>Codexで確認</div>
+        <div>小さく修正</div>
+        <div>Pages公開</div>
+      </div>
+
+      <div class="summary">
+        <strong>おすすめプロンプト：</strong><br>
+        <code>対象は index.html のみです。本文の意味は変えず、スマホ表示とCSSだけ改善してください。まず変更方針を提示し、まだ編集しないでください。</code>
+      </div>
+
+      <p>
+        社内マニュアルや業務手順を扱うHTMLは、PublicではなくPrivateリポジトリで管理するのが安全です。
+        公開用には、個人情報・社内情報・業務上の設定値を削ったサンプル版を作る方が適しています。
+      </p>
+    </section>
+
+    <section id="sources">
+      <h2>11. 公式リソース一覧</h2>
+      <p>
+        このHTMLは、以下のOpenAI公式リソースのみを参考に作成しています。
+      </p>
+
+      <ul class="source-list">
+        <li>
+          <strong>OpenAI Codex公式ページ</strong><br>
+          <a href="https://openai.com/codex/" target="_blank" rel="noopener noreferrer">https://openai.com/codex/</a>
+        </li>
+        <li>
+          <strong>OpenAI Developers：Codex</strong><br>
+          <a href="https://developers.openai.com/codex" target="_blank" rel="noopener noreferrer">https://developers.openai.com/codex</a>
+        </li>
+        <li>
+          <strong>OpenAI Developers：Codex CLI</strong><br>
+          <a href="https://developers.openai.com/codex/cli" target="_blank" rel="noopener noreferrer">https://developers.openai.com/codex/cli</a>
+        </li>
+        <li>
+          <strong>OpenAI Developers：Codex IDE extension</strong><br>
+          <a href="https://developers.openai.com/codex/ide" target="_blank" rel="noopener noreferrer">https://developers.openai.com/codex/ide</a>
+        </li>
+        <li>
+          <strong>OpenAI Developers：Codex Web / Cloud</strong><br>
+          <a href="https://developers.openai.com/codex/cloud" target="_blank" rel="noopener noreferrer">https://developers.openai.com/codex/cloud</a>
+        </li>
+        <li>
+          <strong>OpenAI Help Center：Using Codex with your ChatGPT plan</strong><br>
+          <a href="https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan" target="_blank" rel="noopener noreferrer">https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan</a>
+        </li>
+        <li>
+          <strong>OpenAI Help Center：Codex rate card</strong><br>
+          <a href="https://help.openai.com/en/articles/20001106-codex-rate-card" target="_blank" rel="noopener noreferrer">https://help.openai.com/en/articles/20001106-codex-rate-card</a>
+        </li>
+        <li>
+          <strong>OpenAI Developers：Codex best practices</strong><br>
+          <a href="https://developers.openai.com/codex/learn/best-practices" target="_blank" rel="noopener noreferrer">https://developers.openai.com/codex/learn/best-practices</a
