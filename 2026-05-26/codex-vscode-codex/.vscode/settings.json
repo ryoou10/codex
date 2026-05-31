@@ -1,0 +1,11 @@
+{
+  "files.exclude": {
+    "**/.DS_Store": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.git": true
+  },
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "explorer.confirmDelete": false
+}
