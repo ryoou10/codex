@@ -62,20 +62,124 @@ class ClaudeScriptAdapter(Adapter):
     api_key_env = "ANTHROPIC_API_KEY"
 
     def generate_simulated(self, ctx: JobContext) -> dict:
+        from .. import theme_style
+
         bp = ctx.blueprint
-        scenes = [
-            {
-                "beat_id": b.id,
-                "at": b.at,
-                "label": b.label,
-                "text": f"【{b.label}】{b.description}(テーマ: {bp.theme})",
-                "mood": b.mood.to_dict(),
-            }
-            for b in bp.beats
-        ]
+        style = theme_style.analyze(bp.theme)
+        imagery = style["imagery"]
+        scenes = []
+        for i, b in enumerate(bp.beats):
+            phrase = imagery[i % len(imagery)]
+            scenes.append(
+                {
+                    "beat_id": b.id,
+                    "at": b.at,
+                    "label": b.label,
+                    "text": f"{phrase}。{b.description}",
+                    "mood": b.mood.to_dict(),
+                }
+            )
         return {
             "service": self.service,
+            "live": False,
             "logline": f"『{bp.title}』- {bp.theme} を {int(bp.duration_sec)}秒で描く。",
+            "scenes": scenes,
+        }
+
+    def generate_live(self, ctx: JobContext) -> dict:
+        """Claude API(公式)で脚本を生成する。ANTHROPIC_API_KEY 設定時のみ。
+
+        依存ライブラリなしの方針のため、SDK ではなく標準ライブラリの
+        urllib で Messages API を直接呼ぶ。構造化出力(json_schema)で
+        ビートごとの場面テキストを受け取る。
+        """
+        import json
+        import os
+        import urllib.error
+        import urllib.request
+
+        bp = ctx.blueprint
+        beat_ids = [b.id for b in bp.beats]
+        schema = {
+            "type": "object",
+            "properties": {
+                "logline": {"type": "string", "description": "作品全体を一文で表すログライン"},
+                "scenes": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "beat_id": {"type": "string", "enum": beat_ids},
+                            "text": {"type": "string", "description": "その場面のナレーション・情景描写(日本語、60字以内)"},
+                            "visual": {"type": "string", "description": "映像生成AIに渡す画の指示(日本語)"},
+                        },
+                        "required": ["beat_id", "text", "visual"],
+                        "additionalProperties": False,
+                    },
+                },
+            },
+            "required": ["logline", "scenes"],
+            "additionalProperties": False,
+        }
+        beats_desc = "\n".join(
+            f"- {b.id}【{b.label}】位置 {b.at}: {b.description}"
+            f"(感情: 陰陽 {b.mood.valence:+.1f} / 強度 {b.mood.arousal:.1f} / 緊張 {b.mood.tension:.1f})"
+            for b in bp.beats
+        )
+        prompt = (
+            f"あなたは映像作品の脚本家です。以下の仕様で {int(bp.duration_sec)} 秒の"
+            f"映像作品の脚本を書いてください。\n\n"
+            f"題名: {bp.title}\nテーマ: {bp.theme}\n\n"
+            f"構成ビート(必ず全ビートに1場面ずつ対応させること):\n{beats_desc}\n\n"
+            f"各場面の text は画面に表示されるナレーションです。テーマの具体的な情景を描き、"
+            f"指定された感情の起伏に沿わせてください。"
+        )
+        body = {
+            "model": "claude-opus-4-8",
+            "max_tokens": 16000,
+            "messages": [{"role": "user", "content": prompt}],
+            "output_config": {"format": {"type": "json_schema", "schema": schema}},
+        }
+        request = urllib.request.Request(
+            "https://api.anthropic.com/v1/messages",
+            data=json.dumps(body).encode("utf-8"),
+            headers={
+                "content-type": "application/json",
+                "x-api-key": os.environ[self.api_key_env],
+                "anthropic-version": "2023-06-01",
+            },
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=180) as response:
+                data = json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            detail = e.read().decode("utf-8", errors="replace")[:500]
+            raise RuntimeError(f"Claude API エラー (HTTP {e.code}): {detail}") from e
+        except urllib.error.URLError as e:
+            raise RuntimeError(f"Claude API に接続できません: {e.reason}") from e
+
+        text = next(b["text"] for b in data["content"] if b["type"] == "text")
+        result = json.loads(text)
+        scenes_by_beat = {s["beat_id"]: s for s in result["scenes"]}
+        scenes = []
+        for b in bp.beats:
+            generated = scenes_by_beat.get(b.id, {})
+            scenes.append(
+                {
+                    "beat_id": b.id,
+                    "at": b.at,
+                    "label": b.label,
+                    "text": generated.get("text", b.description),
+                    "visual": generated.get("visual", ""),
+                    "mood": b.mood.to_dict(),
+                }
+            )
+        return {
+            "service": self.service,
+            "live": True,
+            "model": body["model"],
+            "logline": result["logline"],
             "scenes": scenes,
         }
 
@@ -113,7 +217,10 @@ class SeedanceVideoAdapter(Adapter):
     api_key_env = "SEEDANCE_API_KEY"
 
     def generate_simulated(self, ctx: JobContext) -> dict:
+        from .. import theme_style
+
         bp = ctx.blueprint
+        style = theme_style.analyze(bp.theme)
         noise_scale = 0.0 if _has_directive(ctx, "emotion_align") else 0.25
         sync = _has_directive(ctx, "tempo_sync")
         if sync:
@@ -121,13 +228,19 @@ class SeedanceVideoAdapter(Adapter):
             cuts_per_min = sync["target_bpm"] / 8.0
         else:
             cuts_per_min = 4 + 20 * _avg_arousal(bp) + _noise(self.role, bp.title, "cuts") * 3
+        # 脚本(上流)があれば、その visual / text を映像プロンプトに使う
+        script_scenes = {
+            s.get("beat_id"): s for s in ctx.upstream.get("script", {}).get("scenes", [])
+        }
         scenes = []
         for b in bp.beats:
             mood = _noisy_mood(b.mood, noise_scale, self.role, bp.title, b.id)
+            script = script_scenes.get(b.id, {})
+            prompt = script.get("visual") or script.get("text") or b.description
             scenes.append(
                 {
                     "at": b.at,
-                    "prompt": f"{bp.theme} - {b.description}",
+                    "prompt": f"{bp.theme} - {prompt}",
                     # 色温度は valence から導出(陽=暖色/低K、陰=寒色/高K)
                     "color_temp_k": round(6500 - 2500 * mood.valence),
                     "mood": mood.to_dict(),
@@ -137,6 +250,7 @@ class SeedanceVideoAdapter(Adapter):
             "service": self.service,
             "duration_sec": bp.duration_sec,
             "cuts_per_min": round(cuts_per_min, 2),
+            "motif": style["motif"],
             "scenes": scenes,
         }
 
@@ -147,7 +261,10 @@ class TapNowKeyVisualAdapter(Adapter):
     api_key_env = "TAPNOW_API_KEY"
 
     def generate_simulated(self, ctx: JobContext) -> dict:
+        from .. import theme_style
+
         bp = ctx.blueprint
+        style = theme_style.analyze(bp.theme)
         expected_warm = (_avg_valence(bp) + 1.0) / 2.0
         if _has_directive(ctx, "palette_align"):
             warm_fraction = round(expected_warm, 3)
@@ -159,7 +276,7 @@ class TapNowKeyVisualAdapter(Adapter):
             "service": self.service,
             "prompt": f"key visual for '{bp.title}' - {bp.theme}",
             "warm_fraction": warm_fraction,
-            "palette": ["#E8A87C", "#C38D9E", "#41B3A3"] if warm_fraction >= 0.5 else ["#2B6777", "#52AB98", "#C8D8E4"],
+            "palette": style["palette"],
         }
 
 

@@ -126,6 +126,17 @@ function hash(n) {
   let x = Math.sin(n * 127.1 + 311.7) * 43758.5453;
   return x - Math.floor(x);
 }
+function hexRGB(hex) {
+  const h = hex.replace("#", "");
+  return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+}
+// テーマ由来のパレット(TapNow役)とモチーフ(Seedance役)
+const PALETTE = (DATA.keyvisual.palette || []).map(hexRGB);
+const MOTIF_MODE = { rain: 1, snow: 0, particles: 0, bokeh: 2 }[DATA.video.motif];
+function elementColor(col, i) {
+  if (!PALETTE.length) return col;
+  return mix(col, PALETTE[i % PALETTE.length], 0.55);
+}
 
 // ---- 音声合成(WebAudio)----
 let ctx = null, master = null, padOscs = [], padGain = null, padFilter = null,
@@ -251,7 +262,9 @@ function draw(el) {
   const col = mix(base, m.valence >= 0 ? WARM : COOL, Math.min(0.6, Math.abs(m.valence) * 0.7));
   const shot = Math.floor(el / CUT);
   const sh = hash(shot);
-  const mode = Math.floor(hash(shot + 31) * 3); // ショットごとの絵柄
+  // 絵柄: テーマのモチーフを主(7割)としつつ、ショットごとに変化させる
+  const mode = (MOTIF_MODE !== undefined && hash(shot + 57) < 0.7)
+    ? MOTIF_MODE : Math.floor(hash(shot + 31) * 3);
   const beatPhase = (el % BEAT) / BEAT;
   const pulse = Math.pow(1 - beatPhase, 2) * m.arousal; // 拍頭で明滅
 
@@ -279,16 +292,23 @@ function draw(el) {
   glow.addColorStop(1, "rgba(0,0,0,0)");
   g2.fillStyle = glow; g2.fillRect(-80, -80, W + 160, H + 160);
 
-  const cs = col[0] + "," + col[1] + "," + col[2];
+  const rgba = (c, a) => "rgba(" + c[0] + "," + c[1] + "," + c[2] + "," + a + ")";
   if (mode === 0) {
-    // 粒子ドリフト
+    // 粒子ドリフト(snow モチーフ時はゆっくり降下する)
+    const falling = DATA.video.motif === "snow";
     const n = Math.floor(30 + 100 * m.arousal);
     for (let i = 0; i < n; i++) {
       const sp = 25 + 110 * m.arousal;
-      const px = ((hash(i * 3 + 1) * W + el * sp * (0.4 + hash(i))) % (W + 40)) - 20;
-      const jy = Math.sin(el * (2 + 7 * m.tension) + i * 2.4) * (4 + 30 * m.tension);
-      const py = hash(i * 7 + 2) * H + jy;
-      g2.fillStyle = "rgba(" + cs + "," + (0.2 + 0.4 * hash(i * 5)) + ")";
+      let px, py;
+      if (falling) {
+        px = hash(i * 3 + 1) * W + Math.sin(el * (1 + m.tension) + i) * 18;
+        py = ((hash(i * 7 + 2) * H + el * (20 + 50 * m.arousal) * (0.5 + hash(i))) % (H + 40)) - 20;
+      } else {
+        px = ((hash(i * 3 + 1) * W + el * sp * (0.4 + hash(i))) % (W + 40)) - 20;
+        const jy = Math.sin(el * (2 + 7 * m.tension) + i * 2.4) * (4 + 30 * m.tension);
+        py = hash(i * 7 + 2) * H + jy;
+      }
+      g2.fillStyle = rgba(elementColor(col, i), 0.2 + 0.4 * hash(i * 5));
       g2.beginPath(); g2.arc(px, py, 1 + 3.4 * hash(i * 11 + 3), 0, 7); g2.fill();
     }
   } else if (mode === 1) {
@@ -299,7 +319,7 @@ function draw(el) {
       const speed = 280 + 600 * m.arousal;
       const sy = ((hash(i * 17) * H + el * speed * (0.5 + 0.7 * hash(i + shot))) % (H + 200)) - 120;
       const len = 30 + 150 * m.arousal;
-      g2.strokeStyle = "rgba(" + cs + "," + (0.1 + 0.3 * hash(i * 3)) + ")";
+      g2.strokeStyle = rgba(elementColor(col, i), 0.1 + 0.3 * hash(i * 3));
       g2.lineWidth = 1 + 1.6 * hash(i * 9);
       g2.beginPath(); g2.moveTo(sx, sy); g2.lineTo(sx + 6 * m.tension, sy + len); g2.stroke();
     }
@@ -311,7 +331,7 @@ function draw(el) {
       const bx = ((hash(i * 23 + shot) * W + el * dir * (12 + 45 * m.arousal)) % (W + 240) + W + 240) % (W + 240) - 120;
       const by = hash(i * 29) * H + Math.sin(el * 0.7 + i) * 22 * m.tension;
       const r = 18 + 85 * hash(i * 31 + shot);
-      g2.fillStyle = "rgba(" + cs + "," + (0.05 + 0.13 * hash(i * 7) + 0.05 * pulse) + ")";
+      g2.fillStyle = rgba(elementColor(col, i), 0.05 + 0.13 * hash(i * 7) + 0.05 * pulse);
       g2.beginPath(); g2.arc(bx, by, r, 0, 7); g2.fill();
     }
   }

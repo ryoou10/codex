@@ -110,6 +110,50 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(reviewed, set(conductor.STAGES) - {"release"})
 
 
+class ThemeStyleTests(unittest.TestCase):
+    def test_rain_theme_detected(self):
+        from tsumugi import theme_style
+
+        style = theme_style.analyze("雨上がりの渋谷とシンセウェイブ")
+        self.assertEqual(style["motif"], "rain")
+        self.assertTrue(style["palette"])
+        self.assertTrue(style["imagery"])
+
+    def test_unknown_theme_gets_default(self):
+        from tsumugi import theme_style
+
+        style = theme_style.analyze("abstract concept xyz")
+        self.assertEqual(style["motif"], "particles")
+
+    def test_theme_flows_into_artifacts(self):
+        """テーマの解析結果が脚本・映像・キービジュアルに反映されること。"""
+        import tempfile as tf
+
+        from tsumugi import theme_style
+
+        with tf.TemporaryDirectory() as tmp:
+            bp = default_blueprint("雪夜", "雪の降る静かな夜の街", 60)
+            project = conductor.init_project(Path(tmp) / "proj", bp)
+            manifests = conductor.weave(project)
+            style = theme_style.analyze(bp.theme)
+            self.assertEqual(manifests["video"]["motif"], "snow")
+            self.assertEqual(manifests["keyvisual"]["palette"], style["palette"])
+            # 脚本本文にテーマ由来の情景フレーズが含まれる
+            texts = "".join(s["text"] for s in manifests["script"]["scenes"])
+            self.assertTrue(any(p in texts for p in style["imagery"]))
+            # プレイヤーにモチーフとパレットが埋め込まれる
+            html = (project.artifacts_dir / "player.html").read_text(encoding="utf-8")
+            self.assertIn('"motif": "snow"', html.replace("'", '"'))
+
+    def test_claude_adapter_not_live_without_key(self):
+        import os
+
+        from tsumugi.adapters import get_adapter
+
+        self.assertNotIn("ANTHROPIC_API_KEY", os.environ)
+        self.assertFalse(get_adapter("script").is_live())
+
+
 class LedgerTests(unittest.TestCase):
     def test_chain_verifies(self):
         with tempfile.TemporaryDirectory() as tmp:
