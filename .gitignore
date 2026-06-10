@@ -13,3 +13,5 @@ coverage/
 *.app/
 work/
 outputs/
+__pycache__/
+*.pyc
