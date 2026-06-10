@@ -85,8 +85,12 @@
     </form>
   </aside>
   <main>
-    <div id="none" class="empty">プロジェクトを選択または作成してください。</div>
+    <div id="none" class="empty">プロジェクトを選択または作成してください。<br><br>
+      <span class="legend">左の「新規作成」に入力して「作成」を押すと、生成から試写まで自動で進みます。</span></div>
     <div id="work" style="display:none">
+      <div class="legend" style="margin-bottom:10px">
+        使い方: ① <b>ブループリント</b>で感情曲線を設計 → ② <b>整合性</b>の「自動収束」で生成 → ③ <b>プレビュー</b>で試写(▶を押すと音が出ます)
+      </div>
       <div class="tabs">
         <button data-tab="blueprint" class="on">ブループリント</button>
         <button data-tab="harmony">整合性</button>
@@ -135,7 +139,8 @@
 
       <section id="tab-preview" style="display:none">
         <div class="card" style="padding:8px">
-          <div id="previewEmpty" class="empty">まだ生成されていません。「整合性」タブで「自動収束 (auto)」を実行してください。</div>
+          <div id="previewEmpty" class="empty">まだ生成されていません。<br><br>
+            <button id="genPreview" class="primary">▶ 生成して試写する</button></div>
           <iframe id="previewFrame" style="display:none;width:100%;height:680px;border:0;border-radius:8px;background:#000"
                   allow="autoplay"></iframe>
         </div>
@@ -230,7 +235,8 @@ $("#newForm").onsubmit = async (e) => {
     e.target.reset();
     toast(`プロジェクト「${p.title}」を作成しました`);
     await loadProjects();
-    select(p.name);
+    await select(p.name);
+    await generateAndPreview(); // 作成後そのまま生成→試写まで進む
   } catch (err) { toast("エラー: " + err.message); }
 };
 
@@ -248,14 +254,28 @@ async function select(name) {
 }
 
 // ---- タブ ----
+function showTab(name) {
+  document.querySelectorAll(".tabs button").forEach((x) =>
+    x.classList.toggle("on", x.dataset.tab === name));
+  document.querySelectorAll("main section").forEach((s) => (s.style.display = "none"));
+  $("#tab-" + name).style.display = "block";
+}
 document.querySelectorAll(".tabs button").forEach((b) => {
-  b.onclick = () => {
-    document.querySelectorAll(".tabs button").forEach((x) => x.classList.remove("on"));
-    b.classList.add("on");
-    document.querySelectorAll("main section").forEach((s) => (s.style.display = "none"));
-    $("#tab-" + b.dataset.tab).style.display = "block";
-  };
+  b.onclick = () => showTab(b.dataset.tab);
 });
+
+// 生成→試写をワンクリックで(初回ユーザー向け)
+async function generateAndPreview() {
+  toast("生成と整合チェックを実行中…");
+  try {
+    const r = await api(`/projects/${current}/auto`, { method: "POST" });
+    refreshAll();
+    showTab("preview");
+    toast(r.report.passed
+      ? `完成しました(スコア ${r.report.score.toFixed(3)})。▶ を押して試写してください`
+      : "生成しましたが整合性が基準未満です。整合性タブを確認してください", 6000);
+  } catch (err) { toast("エラー: " + err.message, 6000); }
+}
 
 // ---- ブループリント編集 ----
 const AXES = [
@@ -401,6 +421,7 @@ async function loadPreview() {
   frame.style.display = has ? "block" : "none";
   if (has) frame.src = `/api/projects/${current}/artifacts/player.html?t=${Date.now()}`;
 }
+$("#genPreview").onclick = generateAndPreview;
 
 function renderReport(report) {
   const color = report.passed ? "var(--ok)" : "var(--ng)";
