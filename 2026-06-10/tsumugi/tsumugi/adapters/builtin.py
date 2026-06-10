@@ -169,35 +169,31 @@ class CodexPlayerAdapter(Adapter):
     api_key_env = "OPENAI_API_KEY"
 
     def generate_simulated(self, ctx: JobContext) -> dict:
+        import html as html_mod
+        import json
+
+        from .player_template import PLAYER_TEMPLATE
+
         bp = ctx.blueprint
-        music = ctx.upstream.get("music", {})
         cues = [
             {"at_sec": round(b.at * bp.duration_sec, 2), "label": b.label}
             for b in bp.beats
         ]
-        cue_rows = "\n".join(
-            f'      <li data-at="{c["at_sec"]}">{c["at_sec"]}s - {c["label"]}</li>' for c in cues
+        data = {
+            "title": bp.title,
+            "theme": bp.theme,
+            "duration_sec": bp.duration_sec,
+            "beats": [b.to_dict() for b in bp.beats],
+            "script": ctx.upstream.get("script", {"scenes": []}),
+            "music": ctx.upstream.get("music", {}),
+            "video": ctx.upstream.get("video", {}),
+            "keyvisual": ctx.upstream.get("keyvisual", {"palette": []}),
+        }
+        # "</" を含む文字列で <script> ブロックが壊れないようにエスケープする
+        data_json = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
+        html = PLAYER_TEMPLATE.replace("__TITLE__", html_mod.escape(bp.title)).replace(
+            "__DATA_JSON__", data_json
         )
-        html = f"""<!DOCTYPE html>
-<html lang="{bp.language}">
-<head><meta charset="utf-8"><title>{bp.title} - synced player</title></head>
-<body>
-  <h1>{bp.title}</h1>
-  <p>BPM {music.get("bpm", "-")} / {int(bp.duration_sec)}s</p>
-  <video id="v" controls width="640" src="video.mp4"></video>
-  <audio id="a" src="music.mp3"></audio>
-  <ol id="cues">
-{cue_rows}
-  </ol>
-  <script>
-    const v = document.getElementById('v'), a = document.getElementById('a');
-    v.addEventListener('play', () => {{ a.currentTime = v.currentTime; a.play(); }});
-    v.addEventListener('pause', () => a.pause());
-    v.addEventListener('seeked', () => {{ a.currentTime = v.currentTime; }});
-  </script>
-</body>
-</html>
-"""
         return {
             "service": self.service,
             "entry": "player.html",

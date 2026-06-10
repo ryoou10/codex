@@ -71,6 +71,17 @@ class PipelineTests(unittest.TestCase):
         # プレイヤーコードが成果物として書き出される
         self.assertTrue((project.artifacts_dir / "player.html").exists())
 
+    def test_player_is_self_contained_preview(self):
+        """プレイヤーはマニフェスト埋め込み済みで、音と映像を自前合成できること。"""
+        project = self._make_project()
+        manifests = conductor.weave(project)
+        html = (project.artifacts_dir / "player.html").read_text(encoding="utf-8")
+        self.assertIn("AudioContext", html)          # 音声合成
+        self.assertIn("getContext", html)            # 映像合成
+        self.assertIn(str(manifests["music"]["bpm"]), html)  # マニフェスト埋め込み
+        self.assertNotIn("__DATA_JSON__", html)      # プレースホルダ置換済み
+        self.assertNotIn('src="music.mp3"', html)    # 外部ファイル非依存
+
     def test_harmony_loop_converges(self):
         project = self._make_project()
         report = conductor.weave_until_harmony(project, max_iterations=5)

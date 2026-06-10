@@ -90,6 +90,7 @@
       <div class="tabs">
         <button data-tab="blueprint" class="on">ブループリント</button>
         <button data-tab="harmony">整合性</button>
+        <button data-tab="preview">▶ プレビュー</button>
         <button data-tab="artifacts">成果物</button>
         <button data-tab="ledger">来歴台帳</button>
       </div>
@@ -130,6 +131,18 @@
           <span id="revInfo" class="legend"></span>
         </div>
         <div class="card" id="reportCard"><div class="empty">まだレポートがありません。</div></div>
+      </section>
+
+      <section id="tab-preview" style="display:none">
+        <div class="card" style="padding:8px">
+          <div id="previewEmpty" class="empty">まだ生成されていません。「整合性」タブで「自動収束 (auto)」を実行してください。</div>
+          <iframe id="previewFrame" style="display:none;width:100%;height:680px;border:0;border-radius:8px;background:#000"
+                  allow="autoplay"></iframe>
+        </div>
+        <div class="legend" style="margin-top:6px">
+          音と映像は、生成されたマニフェスト(BPM・感情曲線・カット割り・色温度)からブラウザ内でリアルタイム合成しています。
+          実サービスのAPIを接続すると、この設計のまま本物の楽曲・映像に置き換わります。
+        </div>
       </section>
 
       <section id="tab-artifacts" style="display:none">
@@ -231,6 +244,7 @@ async function select(name) {
   loadArtifacts();
   loadLedger();
   loadProjects();
+  loadPreview();
 }
 
 // ---- タブ ----
@@ -376,7 +390,17 @@ async function refreshReport(silent) {
   }
 }
 
-function refreshAll() { refreshReport(true); loadArtifacts(); loadLedger(); loadProjects(); }
+function refreshAll() { refreshReport(true); loadArtifacts(); loadLedger(); loadProjects(); loadPreview(); }
+
+// ---- プレビュー ----
+async function loadPreview() {
+  const files = await api(`/projects/${current}/artifacts`);
+  const has = files.some((f) => f.name === "player.html");
+  const frame = $("#previewFrame");
+  $("#previewEmpty").style.display = has ? "none" : "block";
+  frame.style.display = has ? "block" : "none";
+  if (has) frame.src = `/api/projects/${current}/artifacts/player.html?t=${Date.now()}`;
+}
 
 function renderReport(report) {
   const color = report.passed ? "var(--ok)" : "var(--ng)";
