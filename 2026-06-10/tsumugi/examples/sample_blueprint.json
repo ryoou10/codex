@@ -1,0 +1,52 @@
+{
+  "title": "黎明",
+  "theme": "夜明けの街と一杯の珈琲",
+  "duration_sec": 60.0,
+  "language": "ja",
+  "beats": [
+    {
+      "id": "ki",
+      "at": 0.0,
+      "label": "起",
+      "description": "静かな導入。世界観の提示。",
+      "mood": {
+        "valence": 0.1,
+        "arousal": 0.2,
+        "tension": 0.2
+      }
+    },
+    {
+      "id": "sho",
+      "at": 0.35,
+      "label": "承",
+      "description": "展開。期待感が高まる。",
+      "mood": {
+        "valence": 0.4,
+        "arousal": 0.5,
+        "tension": 0.4
+      }
+    },
+    {
+      "id": "ten",
+      "at": 0.7,
+      "label": "転",
+      "description": "クライマックス。感情の頂点。",
+      "mood": {
+        "valence": 0.7,
+        "arousal": 0.9,
+        "tension": 0.8
+      }
+    },
+    {
+      "id": "ketsu",
+      "at": 1.0,
+      "label": "結",
+      "description": "解放と余韻。",
+      "mood": {
+        "valence": 0.6,
+        "arousal": 0.3,
+        "tension": 0.1
+      }
+    }
+  ]
+}
