@@ -260,10 +260,18 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--workspace", default="./tsumugi-workspace")
+    parser.add_argument("--no-browser", action="store_true", help="ブラウザを自動で開かない")
     args = parser.parse_args(argv)
     server = serve(Path(args.workspace), args.host, args.port)
-    print(f"TSUMUGI app: http://{args.host}:{server.server_address[1]}/")
+    url = f"http://{args.host}:{server.server_address[1]}/"
+    print(f"TSUMUGI app: {url}")
     print(f"workspace : {Path(args.workspace).resolve()}")
+    print("終了するには Ctrl+C(このウィンドウは開いたままにしてください)")
+    if not args.no_browser:
+        import threading
+        import webbrowser
+
+        threading.Timer(0.5, webbrowser.open, [url]).start()
     try:
         server.serve_forever()
     except KeyboardInterrupt:
