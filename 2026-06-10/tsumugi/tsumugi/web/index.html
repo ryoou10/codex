@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TSUMUGI 紡 - Cross-Modal Consistency Orchestrator</title>
+<style>
+  :root {
+    --bg: #12101c; --panel: #1b1830; --panel2: #232043; --line: #353060;
+    --text: #e8e6f5; --dim: #9b96c2; --accent: #c084fc; --accent2: #5eead4;
+    --ok: #4ade80; --ng: #fb7185; --warn: #fbbf24;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Hiragino Sans", "Noto Sans JP", sans-serif; background: var(--bg); color: var(--text); }
+  header { padding: 14px 22px; border-bottom: 1px solid var(--line); display: flex; align-items: baseline; gap: 14px;
+           background: linear-gradient(90deg, #1b1830, #2a1f4d); }
+  header h1 { margin: 0; font-size: 20px; letter-spacing: 2px; }
+  header h1 .kanji { color: var(--accent); }
+  header .sub { color: var(--dim); font-size: 12px; }
+  .layout { display: grid; grid-template-columns: 280px 1fr; min-height: calc(100vh - 53px); }
+  aside { border-right: 1px solid var(--line); padding: 16px; background: var(--panel); }
+  main { padding: 18px 24px; max-width: 1100px; }
+  h2 { font-size: 14px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; margin: 0 0 10px; }
+  .proj { padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 8px; cursor: pointer; }
+  .proj:hover { border-color: var(--accent); }
+  .proj.active { border-color: var(--accent); background: var(--panel2); }
+  .proj .t { font-weight: 600; }
+  .proj .m { font-size: 11px; color: var(--dim); margin-top: 2px; }
+  .badge { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; }
+  .badge.pass { background: rgba(74,222,128,.15); color: var(--ok); }
+  .badge.fail { background: rgba(251,113,133,.15); color: var(--ng); }
+  .badge.none { background: rgba(155,150,194,.15); color: var(--dim); }
+  form.new input { width: 100%; margin-bottom: 6px; }
+  input, textarea { background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px; font: inherit; font-size: 13px; }
+  input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+  button { background: var(--panel2); color: var(--text); border: 1px solid var(--line); border-radius: 7px; padding: 8px 14px; font: inherit; font-size: 13px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #1b1030; font-weight: 700; }
+  button.primary:hover { filter: brightness(1.1); }
+  button:disabled { opacity: .45; cursor: wait; }
+  .tabs { display: flex; gap: 6px; margin: 4px 0 16px; }
+  .tabs button.on { background: var(--accent); color: #1b1030; border-color: var(--accent); font-weight: 700; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; margin-bottom: 14px; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .row label { font-size: 12px; color: var(--dim); display: block; margin-bottom: 3px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 7px 9px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--dim); font-weight: 600; font-size: 12px; }
+  .score { font-size: 34px; font-weight: 800; }
+  .directive { color: var(--warn); font-size: 12px; }
+  .beat { border: 1px solid var(--line); border-radius: 8px; padding: 12px; margin-bottom: 10px; background: var(--panel2); }
+  .beat .head { display: flex; gap: 8px; margin-bottom: 8px; }
+  .beat .head input { flex: 1; }
+  .beat .head input.at { flex: 0 0 80px; }
+  .sliders { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .sliders label { font-size: 11px; color: var(--dim); }
+  .sliders .val { color: var(--accent2); font-weight: 700; }
+  input[type=range] { width: 100%; accent-color: var(--accent); }
+  pre { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow: auto; font-size: 12px; max-height: 420px; }
+  #toast { position: fixed; bottom: 18px; right: 18px; background: var(--panel2); border: 1px solid var(--accent); border-radius: 8px;
+           padding: 10px 16px; font-size: 13px; display: none; max-width: 420px; }
+  #curve { width: 100%; height: auto; }
+  .legend { font-size: 11px; color: var(--dim); }
+  .legend b { font-weight: 700; }
+  .empty { color: var(--dim); padding: 30px; text-align: center; }
+  a { color: var(--accent2); }
+</style>
+</head>
+<body>
+<header>
+  <h1>TSUMUGI <span class="kanji">紡</span></h1>
+  <span class="sub">Cross-Modal Consistency Orchestrator — Claude · Codex · Hermes · Seedance · TapNow · Suno を一つの作品に束ねる</span>
+</header>
+<div class="layout">
+  <aside>
+    <h2>プロジェクト</h2>
+    <div id="projects"></div>
+    <h2 style="margin-top:18px">新規作成</h2>
+    <form class="new" id="newForm">
+      <input name="name" placeholder="ID(英数字)" required pattern="[A-Za-z0-9_-]{1,64}">
+      <input name="title" placeholder="題名" required>
+      <input name="theme" placeholder="テーマ" required>
+      <input name="duration_sec" type="number" placeholder="秒数" value="60" min="1" max="3600" required>
+      <button class="primary" style="width:100%">作成</button>
+    </form>
+  </aside>
+  <main>
+    <div id="none" class="empty">プロジェクトを選択または作成してください。</div>
+    <div id="work" style="display:none">
+      <div class="tabs">
+        <button data-tab="blueprint" class="on">ブループリント</button>
+        <button data-tab="harmony">整合性</button>
+        <button data-tab="artifacts">成果物</button>
+        <button data-tab="ledger">来歴台帳</button>
+      </div>
+
+      <section id="tab-blueprint">
+        <div class="card">
+          <div class="row">
+            <div><label>題名</label><input id="bpTitle"></div>
+            <div style="flex:1"><label>テーマ</label><input id="bpTheme" style="width:100%"></div>
+            <div><label>尺(秒)</label><input id="bpDuration" type="number" min="1" max="3600" style="width:90px"></div>
+          </div>
+        </div>
+        <div class="card">
+          <h2>感情曲線</h2>
+          <svg id="curve" viewBox="0 0 640 200"></svg>
+          <div class="legend">
+            <b style="color:#c084fc">━ valence(陰陽)</b> &nbsp;
+            <b style="color:#5eead4">━ arousal(静動)</b> &nbsp;
+            <b style="color:#fbbf24">━ tension(緊張)</b>
+          </div>
+        </div>
+        <div class="card">
+          <h2>ビート(物語の拍)</h2>
+          <div id="beats"></div>
+          <div class="row">
+            <button id="addBeat">+ ビートを追加</button>
+            <button id="saveBp" class="primary">ブループリントを保存</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-harmony" style="display:none">
+        <div class="card row">
+          <button id="btnWeave">生成 (weave)</button>
+          <button id="btnCheck">検証 (check)</button>
+          <button id="btnRevise">修正再生成 (revise)</button>
+          <button id="btnAuto" class="primary">自動収束 (auto)</button>
+          <span id="revInfo" class="legend"></span>
+        </div>
+        <div class="card" id="reportCard"><div class="empty">まだレポートがありません。</div></div>
+      </section>
+
+      <section id="tab-artifacts" style="display:none">
+        <div class="card">
+          <table id="artTable"><thead><tr><th>ファイル</th><th>サイズ</th><th></th></tr></thead><tbody></tbody></table>
+        </div>
+        <div class="card"><pre id="artView">成果物を選択すると内容を表示します。</pre></div>
+      </section>
+
+      <section id="tab-ledger" style="display:none">
+        <div class="card row">
+          <button id="btnVerify" class="primary">台帳を検証</button>
+          <span id="ledgerStatus" class="legend"></span>
+        </div>
+        <div class="card">
+          <table id="ledgerTable">
+            <thead><tr><th>#</th><th>rev</th><th>役割</th><th>サービス</th><th>成果物</th><th>ハッシュ</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+<div id="toast"></div>
+
+<script>
+"use strict";
+const $ = (sel) => document.querySelector(sel);
+let current = null;   // プロジェクト名
+let bp = null;        // 編集中ブループリント
+
+function toast(msg, ms = 2600) {
+  const el = $("#toast");
+  el.textContent = msg;
+  el.style.display = "block";
+  clearTimeout(el._t);
+  el._t = setTimeout(() => (el.style.display = "none"), ms);
+}
+
+async function api(path, opts = {}) {
+  const res = await fetch("/api" + path, {
+    headers: { "Content-Type": "application/json" },
+    ...opts,
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || res.statusText);
+  return data;
+}
+
+// ---- プロジェクト一覧 ----
+async function loadProjects() {
+  const list = await api("/projects");
+  const box = $("#projects");
+  box.innerHTML = "";
+  for (const p of list) {
+    const div = document.createElement("div");
+    div.className = "proj" + (p.name === current ? " active" : "");
+    const badge = p.passed === null || p.passed === undefined
+      ? '<span class="badge none">未検証</span>'
+      : p.passed ? `<span class="badge pass">PASS ${p.score.toFixed(3)}</span>`
+                 : `<span class="badge fail">FAIL ${p.score.toFixed(3)}</span>`;
+    div.innerHTML = `<div class="t">${esc(p.title)}</div>
+      <div class="m">${esc(p.name)} · ${p.duration_sec}s · rev ${p.revision} ${badge}</div>`;
+    div.onclick = () => select(p.name);
+    box.appendChild(div);
+  }
+  if (!list.length) box.innerHTML = '<div class="legend">まだありません。</div>';
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+$("#newForm").onsubmit = async (e) => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  try {
+    const p = await api("/projects", { method: "POST", body: {
+      name: f.get("name"), title: f.get("title"),
+      theme: f.get("theme"), duration_sec: Number(f.get("duration_sec")),
+    }});
+    e.target.reset();
+    toast(`プロジェクト「${p.title}」を作成しました`);
+    await loadProjects();
+    select(p.name);
+  } catch (err) { toast("エラー: " + err.message); }
+};
+
+async function select(name) {
+  current = name;
+  $("#none").style.display = "none";
+  $("#work").style.display = "block";
+  bp = await api(`/projects/${name}/blueprint`);
+  renderBlueprint();
+  refreshReport(true);
+  loadArtifacts();
+  loadLedger();
+  loadProjects();
+}
+
+// ---- タブ ----
+document.querySelectorAll(".tabs button").forEach((b) => {
+  b.onclick = () => {
+    document.querySelectorAll(".tabs button").forEach((x) => x.classList.remove("on"));
+    b.classList.add("on");
+    document.querySelectorAll("main section").forEach((s) => (s.style.display = "none"));
+    $("#tab-" + b.dataset.tab).style.display = "block";
+  };
+});
+
+// ---- ブループリント編集 ----
+const AXES = [
+  ["valence", -1, 1, "陰陽"],
+  ["arousal", 0, 1, "静動"],
+  ["tension", 0, 1, "緊張"],
+];
+
+function renderBlueprint() {
+  $("#bpTitle").value = bp.title;
+  $("#bpTheme").value = bp.theme;
+  $("#bpDuration").value = bp.duration_sec;
+  const box = $("#beats");
+  box.innerHTML = "";
+  bp.beats.forEach((beat, i) => {
+    const div = document.createElement("div");
+    div.className = "beat";
+    div.innerHTML = `
+      <div class="head">
+        <input class="at" type="number" min="0" max="1" step="0.05" value="${beat.at}" title="位置 0〜1">
+        <input class="label" value="${esc(beat.label)}" placeholder="ラベル" style="flex:0 0 90px">
+        <input class="desc" value="${esc(beat.description)}" placeholder="描写">
+        <button class="del" title="削除">×</button>
+      </div>
+      <div class="sliders">${AXES.map(([axis, min, max, jp]) => `
+        <div><label>${axis}(${jp}) <span class="val" data-axis="${axis}">${beat.mood[axis]}</span></label>
+        <input type="range" data-axis="${axis}" min="${min}" max="${max}" step="0.05" value="${beat.mood[axis]}"></div>`).join("")}
+      </div>`;
+    div.querySelector(".at").oninput = (e) => { beat.at = Number(e.target.value); drawCurve(); };
+    div.querySelector(".label").oninput = (e) => (beat.label = e.target.value);
+    div.querySelector(".desc").oninput = (e) => (beat.description = e.target.value);
+    div.querySelector(".del").onclick = () => { bp.beats.splice(i, 1); renderBlueprint(); };
+    div.querySelectorAll("input[type=range]").forEach((r) => {
+      r.oninput = () => {
+        beat.mood[r.dataset.axis] = Number(r.value);
+        div.querySelector(`.val[data-axis=${r.dataset.axis}]`).textContent = r.value;
+        drawCurve();
+      };
+    });
+    box.appendChild(div);
+  });
+  drawCurve();
+}
+
+$("#addBeat").onclick = () => {
+  const last = bp.beats[bp.beats.length - 1];
+  bp.beats.push({
+    id: "b" + Date.now().toString(36),
+    at: Math.min(1, (last ? last.at : 0) + 0.1),
+    label: "拍", description: "",
+    mood: { valence: 0, arousal: 0.5, tension: 0.5 },
+  });
+  renderBlueprint();
+};
+
+$("#saveBp").onclick = async () => {
+  bp.title = $("#bpTitle").value;
+  bp.theme = $("#bpTheme").value;
+  bp.duration_sec = Number($("#bpDuration").value);
+  bp.beats.sort((a, b) => a.at - b.at);
+  try {
+    bp = await api(`/projects/${current}/blueprint`, { method: "PUT", body: bp });
+    renderBlueprint();
+    toast("ブループリントを保存しました");
+    loadProjects();
+  } catch (err) { toast("保存エラー: " + err.message, 5000); }
+};
+
+function drawCurve() {
+  const svg = $("#curve");
+  const W = 640, H = 200, L = 36, R = 12, T = 14, B = 26;
+  const beats = [...bp.beats].sort((a, b) => a.at - b.at);
+  const x = (at) => L + at * (W - L - R);
+  const colors = { valence: "#c084fc", arousal: "#5eead4", tension: "#fbbf24" };
+  const y = (axis, v) => axis === "valence"
+    ? T + (1 - (v + 1) / 2) * (H - T - B)
+    : T + (1 - v) * (H - T - B);
+  let out = `<rect x="0" y="0" width="${W}" height="${H}" fill="none"/>
+    <line x1="${L}" y1="${y("arousal", 0)}" x2="${W - R}" y2="${y("arousal", 0)}" stroke="#353060"/>
+    <line x1="${L}" y1="${y("valence", 0)}" x2="${W - R}" y2="${y("valence", 0)}" stroke="#353060" stroke-dasharray="4 4"/>
+    <text x="4" y="${y("valence", 0) + 4}" fill="#9b96c2" font-size="10">v=0</text>`;
+  for (const [axis] of AXES) {
+    const pts = beats.map((b) => `${x(b.at)},${y(axis, b.mood[axis])}`).join(" ");
+    out += `<polyline points="${pts}" fill="none" stroke="${colors[axis]}" stroke-width="2"/>`;
+  }
+  for (const b of beats) {
+    out += `<line x1="${x(b.at)}" y1="${T}" x2="${x(b.at)}" y2="${H - B}" stroke="#353060"/>
+      <text x="${x(b.at)}" y="${H - 8}" fill="#9b96c2" font-size="11" text-anchor="middle">${esc(b.label)}</text>`;
+    for (const [axis] of AXES)
+      out += `<circle cx="${x(b.at)}" cy="${y(axis, b.mood[axis])}" r="3.5" fill="${colors[axis]}"/>`;
+  }
+  svg.innerHTML = out;
+}
+
+// ---- 整合性 ----
+async function action(btn, fn) {
+  const buttons = document.querySelectorAll("#tab-harmony button");
+  buttons.forEach((b) => (b.disabled = true));
+  try { await fn(); } catch (err) { toast("エラー: " + err.message, 5000); }
+  buttons.forEach((b) => (b.disabled = false));
+}
+
+$("#btnWeave").onclick = (e) => action(e.target, async () => {
+  const r = await api(`/projects/${current}/weave`, { method: "POST", body: {} });
+  toast(`revision ${r.revision} を生成しました`);
+  refreshAll();
+});
+$("#btnRevise").onclick = (e) => action(e.target, async () => {
+  const r = await api(`/projects/${current}/weave`, { method: "POST", body: { revise: true } });
+  toast(`修正指示を適用し revision ${r.revision} を生成しました`);
+  refreshAll();
+});
+$("#btnCheck").onclick = (e) => action(e.target, async () => {
+  const report = await api(`/projects/${current}/check`, { method: "POST" });
+  renderReport(report);
+  toast(report.passed ? "整合性 PASS" : "不整合を検出しました");
+  loadProjects();
+});
+$("#btnAuto").onclick = (e) => action(e.target, async () => {
+  const r = await api(`/projects/${current}/auto`, { method: "POST" });
+  renderReport(r.report);
+  toast(r.report.passed ? `収束しました(rev ${r.revision})` : "上限回数内に収束しませんでした");
+  refreshAll();
+});
+
+async function refreshReport(silent) {
+  try {
+    renderReport(await api(`/projects/${current}/report`));
+  } catch (err) {
+    if (!silent) toast(err.message);
+    $("#reportCard").innerHTML = '<div class="empty">まだレポートがありません。</div>';
+  }
+}
+
+function refreshAll() { refreshReport(true); loadArtifacts(); loadLedger(); loadProjects(); }
+
+function renderReport(report) {
+  const color = report.passed ? "var(--ok)" : "var(--ng)";
+  let html = `<div class="row" style="margin-bottom:10px">
+    <span class="score" style="color:${color}">${report.score.toFixed(4)}</span>
+    <span class="badge ${report.passed ? "pass" : "fail"}">${report.passed ? "PASS" : "FAIL"}</span>
+  </div>
+  <table><thead><tr><th></th><th>チェック</th><th>スコア</th><th>詳細</th></tr></thead><tbody>`;
+  for (const c of report.checks) {
+    const directives = c.directives.map((d) =>
+      `<div class="directive">→ 修正指示 (${esc(d.role)}): ${esc(d.reason || d.type)}</div>`).join("");
+    html += `<tr>
+      <td style="color:${c.passed ? "var(--ok)" : "var(--ng)"}">${c.passed ? "✔" : "✘"}</td>
+      <td>${esc(c.name)}</td><td>${c.score.toFixed(4)}</td>
+      <td>${esc(c.detail)}${directives}</td></tr>`;
+  }
+  $("#reportCard").innerHTML = html + "</tbody></table>";
+}
+
+// ---- 成果物 ----
+async function loadArtifacts() {
+  const files = await api(`/projects/${current}/artifacts`);
+  const tbody = $("#artTable tbody");
+  tbody.innerHTML = "";
+  for (const f of files) {
+    const tr = document.createElement("tr");
+    const open = f.name.endsWith(".html")
+      ? `<a href="/api/projects/${current}/artifacts/${f.name}" target="_blank">開く</a>`
+      : `<a href="#" data-f="${esc(f.name)}">表示</a>`;
+    tr.innerHTML = `<td>${esc(f.name)}</td><td>${f.bytes} B</td><td>${open}</td>`;
+    const link = tr.querySelector("a[data-f]");
+    if (link) link.onclick = async (e) => {
+      e.preventDefault();
+      const res = await fetch(`/api/projects/${current}/artifacts/${f.name}`);
+      $("#artView").textContent = await res.text();
+    };
+    tbody.appendChild(tr);
+  }
+}
+
+// ---- 台帳 ----
+async function loadLedger() {
+  const entries = await api(`/projects/${current}/ledger`);
+  const tbody = $("#ledgerTable tbody");
+  tbody.innerHTML = "";
+  for (const e of entries) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${e.seq}</td><td>${e.revision}</td><td>${esc(e.role)}</td>
+      <td>${esc(e.service)}${e.live ? "" : ' <span class="legend">(sim)</span>'}</td>
+      <td>${esc(e.artifact_path)}</td>
+      <td class="legend">${e.entry_hash.slice(0, 12)}…</td>`;
+    tbody.appendChild(tr);
+  }
+  $("#ledgerStatus").textContent = `${entries.length} 件`;
+}
+
+$("#btnVerify").onclick = async () => {
+  const r = await api(`/projects/${current}/ledger/verify`, { method: "POST" });
+  $("#ledgerStatus").innerHTML = r.ok
+    ? `<span style="color:var(--ok)">PASS</span> ${esc(r.message)}`
+    : `<span style="color:var(--ng)">FAIL</span> ${esc(r.message)}`;
+};
+
+loadProjects();
+</script>
+</body>
+</html>
