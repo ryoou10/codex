@@ -1,0 +1,7 @@
+interface:
+  display_name: "Visual Prompt Designer"
+  short_description: "Turns vague design feedback into image prompts"
+  brand_color: "#8B5CF6"
+  default_prompt: "Use $visual-prompt-designer to diagnose this image prompt, rewrite it with stronger composition and worldbuilding, then hand it off to imagegen if generation is needed."
+policy:
+  allow_implicit_invocation: true

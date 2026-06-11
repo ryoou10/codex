@@ -1,0 +1,23 @@
+{
+  "skill_name": "prompt-architect",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "上司に出す業務改善案を作らせるプロンプトがほしい",
+      "expected_output": "Routes to prompt-business-improvement and returns a supervisor-ready improvement proposal prompt.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "今日の業務報告を上司に送るためのプロンプトを作って",
+      "expected_output": "Routes to prompt-work-report and returns a workplace report prompt.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "CodexにReactのバグ修正を頼むプロンプトを作って",
+      "expected_output": "Routes to prompt-codex-task and returns a code-task prompt.",
+      "files": []
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "skill_name": "prompt-revision-request",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "今あるプロンプトをもっと一度で良い出力になるよう改善させるプロンプトを作って",
+      "expected_output": "A copy-ready prompt for improving an existing prompt or artifact, with diagnosis, revision direction, revised version, change summary, and quality checklist.",
+      "files": []
+    }
+  ]
+}

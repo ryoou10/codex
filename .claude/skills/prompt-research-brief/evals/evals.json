@@ -1,0 +1,11 @@
+{
+  "skill_name": "prompt-research-brief",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "M365 Copilot Basicと有料版の違いを調査させるプロンプトを作って",
+      "expected_output": "A copy-ready research prompt with scope, current-source verification, comparison criteria, source handling, and decision-ready output.",
+      "files": []
+    }
+  ]
+}

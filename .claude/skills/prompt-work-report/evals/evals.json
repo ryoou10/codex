@@ -1,0 +1,11 @@
+{
+  "skill_name": "prompt-work-report",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "今日の業務内容を上司に報告する文を作らせるプロンプトを作って",
+      "expected_output": "A copy-ready prompt for a concise workplace report with status, results, blockers, next actions, and confirmation points.",
+      "files": []
+    }
+  ]
+}

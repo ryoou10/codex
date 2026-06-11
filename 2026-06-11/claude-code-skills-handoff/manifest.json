@@ -1,0 +1,80 @@
+{
+  "name": "claude-code-skills-handoff",
+  "description": "Custom Codex skills packaged for review or import into Claude Code.",
+  "source_root": "/Users/ryogokita/.codex/skills",
+  "target_layout": ".claude/skills/<skill-name>/SKILL.md",
+  "created_for": "Claude Code handoff",
+  "skills": [
+    {
+      "name": "imagegen-auto-director",
+      "category": "image-workflow",
+      "role": "Convert local or attached reference images plus conditions into image-generation specs."
+    },
+    {
+      "name": "x-viral-image-director",
+      "category": "image-workflow",
+      "role": "Create X-ready shareable image direction from reference images."
+    },
+    {
+      "name": "visual-prompt-designer",
+      "category": "image-workflow",
+      "role": "Refine visual prompts for composition, hierarchy, mood, and character/worldbuilding imagery."
+    },
+    {
+      "name": "prompt-architect",
+      "category": "prompt-router",
+      "role": "Route prompt creation requests to one specific child skill."
+    },
+    {
+      "name": "prompt-business-improvement",
+      "category": "prompt-child",
+      "role": "Create prompts for supervisor-ready business improvement proposals."
+    },
+    {
+      "name": "prompt-work-report",
+      "category": "prompt-child",
+      "role": "Create prompts for work reports, status updates, handoffs, and internal sharing."
+    },
+    {
+      "name": "prompt-research-brief",
+      "category": "prompt-child",
+      "role": "Create prompts for source-aware research briefs and comparisons."
+    },
+    {
+      "name": "prompt-writing-draft",
+      "category": "prompt-child",
+      "role": "Create prompts for articles, SNS posts, essays, and structured drafts."
+    },
+    {
+      "name": "prompt-codex-task",
+      "category": "prompt-child",
+      "role": "Create prompts for Codex or coding-agent tasks."
+    },
+    {
+      "name": "prompt-revision-request",
+      "category": "prompt-child",
+      "role": "Create prompts for improving existing drafts, outputs, prompts, or documents."
+    },
+    {
+      "name": "light-novel-creator",
+      "category": "creative-writing",
+      "role": "Support Japanese fiction, light novel, story, plot, worldbuilding, and character setting."
+    },
+    {
+      "name": "youtube-yoga-notifier",
+      "category": "automation",
+      "role": "Support recurring YouTube yoga recommendations and reminder workflows."
+    },
+    {
+      "name": "skill-creator-2",
+      "category": "skill-authoring",
+      "role": "Create, modify, improve, and evaluate skills."
+    },
+    {
+      "name": "xurl",
+      "category": "social-cli",
+      "role": "Guide authenticated X/Twitter workflows while preserving auth safety."
+    }
+  ]
+}
+

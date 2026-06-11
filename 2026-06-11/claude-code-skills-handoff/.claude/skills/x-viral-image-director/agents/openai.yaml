@@ -1,0 +1,4 @@
+interface:
+  display_name: "X Viral Image Director"
+  short_description: "Create X-ready images from reference folders"
+  default_prompt: "Use $x-viral-image-director to create an X-ready image from my iCloud image folder and an optional style reference."

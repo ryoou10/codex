@@ -1,0 +1,11 @@
+{
+  "skill_name": "prompt-writing-draft",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "noteの記事を書かせるためのプロンプトを作って。テーマは毎日の業務改善。",
+      "expected_output": "A copy-ready writing prompt with audience, thesis, medium, structure, draft requirements, title candidates, and quality checklist.",
+      "files": []
+    }
+  ]
+}

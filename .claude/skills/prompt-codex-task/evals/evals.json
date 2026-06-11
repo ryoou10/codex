@@ -1,0 +1,11 @@
+{
+  "skill_name": "prompt-codex-task",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Codexに既存のReactアプリのバグ修正を頼むプロンプトを作って",
+      "expected_output": "A copy-ready Codex task prompt that instructs file inspection, scoped edits, verification commands, and final reporting.",
+      "files": []
+    }
+  ]
+}

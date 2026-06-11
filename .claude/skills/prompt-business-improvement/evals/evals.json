@@ -1,0 +1,17 @@
+{
+  "skill_name": "prompt-business-improvement",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "上司に出す業務改善案を作らせるプロンプトがほしい。毎回ざっくり頼んで時間がかかるので、一度で使える形にして。",
+      "expected_output": "A copy-ready Japanese prompt for supervisor-ready business improvement proposals with role, objective, assumptions, replaceable fields, output structure, and quality checklist.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Copilot Basicを使って業務改善の価値を上司に見せたい。改善案を作らせるプロンプトを作って。",
+      "expected_output": "A prompt that includes current workflow vs AI-assisted workflow, a small measurable proof point, before/after logging, supervisor decision points, and a one-week experiment.",
+      "files": []
+    }
+  ]
+}

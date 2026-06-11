@@ -1,0 +1,4 @@
+interface:
+  display_name: "Imagegen Auto Director"
+  short_description: "Reference images to polished generation specs"
+  default_prompt: "Use $imagegen-auto-director to inspect my reference image and generate a polished image from my conditions."

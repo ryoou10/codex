@@ -122,11 +122,31 @@ const value = normalize(input);
 ## 9. スキル構成
 Claude Code用のスキルは `.claude/skills/` 配下に配置している。各スキルの詳細は対応する `SKILL.md` を参照すること。
 
+画像ワークフロー系：
+- `imagegen-auto-director` — 参照画像と条件から画像生成スペックを組み立てる。画像生成ツールが未設定の環境では、完成スペックの納品までを行う。
+- `x-viral-image-director` — X (Twitter) 向けのシェアされやすい画像のディレクション。
+- `visual-prompt-designer` — 曖昧なデザインフィードバックを具体的な画像プロンプトに翻訳する。
+
+プロンプト作成系：
+- `prompt-architect` — プロンプト作成依頼を最適な子スキルへルーティングする親スキル。
+- `prompt-business-improvement` — 業務改善提案用プロンプト作成。
+- `prompt-work-report` — 業務報告・進捗共有用プロンプト作成。
+- `prompt-research-brief` — 調査・比較ブリーフ用プロンプト作成。
+- `prompt-writing-draft` — 記事・SNS投稿など新規文章用プロンプト作成。
+- `prompt-codex-task` — Codexなどコーディングエージェント向けタスクプロンプト作成。
+- `prompt-revision-request` — 既存成果物の改善依頼用プロンプト作成。
+
+その他：
 - `light-novel-creator` — 小説・ライトノベル執筆スキル。セクション8のトリガールールに従って起動する。
-- `skill-creator` — スキルの新規作成・改善・評価(eval)・description最適化を行うスキル。元は `2026-05-30/skill-creator 2/` のフル版。
+- `youtube-yoga-notifier` — 朝・夜の定時YouTubeヨガ動画レコメンド。スケジュール実行は環境のスケジューラ(`/loop`、cron等)に委ねる。
+- `skill-creator` — スキルの新規作成・改善・評価(eval)・description最適化を行うスキル。元は `2026-05-30/skill-creator 2/` のフル版(handoff版の `skill-creator-2` と同一内容)。
 - `xurl` — `xurl` CLIによるX (Twitter) API操作スキル。`xurl` バイナリが必要。
 
-元になったCodex版スキルは `2026-05-26/`・`2026-05-30/` 配下にアーカイブとして残している。スキルを更新する場合は `.claude/skills/` 側を正とする。
+ルーティングの目安：
+- プロンプト作成依頼はまず `prompt-architect` で分類し、該当する子スキル1つに絞って使う。
+- 画像生成依頼は `visual-prompt-designer`(プロンプト精錬)→ `imagegen-auto-director`(スペック化・生成)の順に組み合わせる。X向けの場合のみ `x-viral-image-director` を使う。
+
+元になったCodex版スキルは `2026-05-26/`・`2026-05-30/`・`2026-06-11/claude-code-skills-handoff/` 配下にアーカイブとして残している。スキルを更新する場合は `.claude/skills/` 側を正とする。
 
 ## 10. Codex由来の記述の読み替え
 アーカイブ側のスキルやドキュメントにCodex固有の記述が残っている場合、Claude Codeでは次のように読み替える。
@@ -135,4 +155,5 @@ Claude Code用のスキルは `.claude/skills/` 配下に配置している。�
 - `image_gen` などの画像生成ツール → Claude Codeに同等ツールはない。画像生成が必要な場合はユーザーに確認する。
 - 「Codex」への言及 → Claude Code(または現在のアシスタント)と読み替える。
 - OpenClaw固有のfrontmatter(`metadata.openclaw` など) → Claude Codeでは不要。`name` と `description` を必須とする。
+- 画像系スキルが参照する `~/Library/Mobile Documents/com~apple~CloudDocs/画像` はユーザーのMac上のiCloud同期パスである。Mac以外の環境ではこのパスは存在しないため、現在のワークスペースを確認し、結果に影響する場合のみユーザーに尋ねる。
 - スクリプトは勝手に実行しない。必要な場合のみ、内容を確認したうえで実行する。
