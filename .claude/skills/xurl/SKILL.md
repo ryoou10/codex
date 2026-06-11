@@ -1,6 +1,6 @@
 ---
 name: xurl
-description: "xurl CLI for authenticated X posts, replies, reads/search, DMs, media upload, followers, auth status, or raw v2 API calls."
+description: "xurl CLIでX (Twitter) APIを操作するスキル(投稿・検索・DM・メディア等)。 xurl CLI for authenticated X posts, replies, reads/search, DMs, media upload, followers, auth status, or raw v2 API calls."
 ---
 
 # xurl

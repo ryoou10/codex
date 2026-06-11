@@ -1,6 +1,6 @@
 ---
 name: prompt-writing-draft
-description: Create copy-ready prompts for drafting new articles, blog posts, note posts, SNS posts, essays, and structured written content. Use this skill when the user asks for prompts about "記事作成", "ブログ", "note", "SNS投稿", "文章作成", "原稿", "構成案", or creating a new piece of writing from a rough idea. This skill is intentionally narrow and should not be used for improving an existing draft, research briefs, coding tasks, or workplace reports.
+description: "記事・ブログ・SNS投稿など新規文章用のプロンプトを作るスキル。 Create copy-ready prompts for drafting new articles, blog posts, note posts, SNS posts, essays, and structured written content. Use this skill when the user asks for prompts about \"記事作成\", \"ブログ\", \"note\", \"SNS投稿\", \"文章作成\", \"原稿\", \"構成案\", or creating a new piece of writing from a rough idea. This skill is intentionally narrow and should not be used for improving an existing draft, research briefs, coding tasks, or workplace reports."
 ---
 
 # Writing Draft Prompt Builder

@@ -1,6 +1,6 @@
 ---
 name: youtube-yoga-notifier
-description: Use this skill whenever the user asks for recurring YouTube yoga video recommendations, yoga reminder automations, fixed-time morning/evening yoga notifications, or A/B/C yoga pattern selection. It creates or maintains a fixed-time notification workflow that recommends 9 public YouTube yoga videos as 3 body-part patterns with 3 videos per pattern.
+description: "朝・夜の定時YouTubeヨガ動画レコメンドスキル(3部位×3本=9本構成)。 Use this skill whenever the user asks for recurring YouTube yoga video recommendations, yoga reminder automations, fixed-time morning/evening yoga notifications, or A/B/C yoga pattern selection. It creates or maintains a fixed-time notification workflow that recommends 9 public YouTube yoga videos as 3 body-part patterns with 3 videos per pattern."
 ---
 
 # YouTube Yoga Notifier

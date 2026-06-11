@@ -1,6 +1,6 @@
 ---
 name: x-viral-image-director
-description: Create X-ready shareable bitmap images from an iCloud Drive image folder and optional attached style reference, then generate through an available image-generation tool when one is configured. Use when the user asks to reference all images in iCloud Drive's image folder, match an attached image's mood or art style, fill unspecified image-generation fields, and make an image optimized for X/Twitter likes, reposts, quotes, thumbnail stopping power, or social virality.
+description: "X (Twitter) でシェアされやすい画像をディレクションするスキル。 Create X-ready shareable bitmap images from an iCloud Drive image folder and optional attached style reference, then generate through an available image-generation tool when one is configured. Use when the user asks to reference all images in iCloud Drive's image folder, match an attached image's mood or art style, fill unspecified image-generation fields, and make an image optimized for X/Twitter likes, reposts, quotes, thumbnail stopping power, or social virality."
 ---
 
 # X Viral Image Director

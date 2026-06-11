@@ -1,6 +1,6 @@
 ---
 name: visual-prompt-designer
-description: Use before image generation when refining prompts, especially character and worldbuilding images, or translating vague design feedback into concrete visual direction. Pair with an available image-generation tool when the user wants an actual bitmap generated. Diagnose issues like "too flat", "too cluttered", "not premium", "needs hierarchy", "let it breathe", "tighten it up", "more cinematic", "stronger negative space", "better rhythm", or "needs an anchor", then return a concise diagnosis and an improved prompt.
+description: "曖昧なデザイン要望を具体的な画像プロンプトに翻訳するスキル。 Use before image generation when refining prompts, especially character and worldbuilding images, or translating vague design feedback into concrete visual direction. Pair with an available image-generation tool when the user wants an actual bitmap generated. Diagnose issues like \"too flat\", \"too cluttered\", \"not premium\", \"needs hierarchy\", \"let it breathe\", \"tighten it up\", \"more cinematic\", \"stronger negative space\", \"better rhythm\", or \"needs an anchor\", then return a concise diagnosis and an improved prompt."
 ---
 
 # Visual Prompt Designer

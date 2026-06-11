@@ -1,6 +1,6 @@
 ---
 name: prompt-business-improvement
-description: Create copy-ready prompts for supervisor-ready business improvement proposals. Use this skill when the user asks for prompts about "上司に出す業務改善案", "業務改善", "改善提案", "現場業務のムダ削減", "A4 1枚で提案", "上司が判断できる資料", "Copilot導入の効果を示す", or daily workplace improvement prompt creation. This skill is intentionally narrow and should not be used for general writing, research, coding, or visual prompts.
+description: "上司に出せる業務改善提案用のプロンプトを作るスキル。 Create copy-ready prompts for supervisor-ready business improvement proposals. Use this skill when the user asks for prompts about \"上司に出す業務改善案\", \"業務改善\", \"改善提案\", \"現場業務のムダ削減\", \"A4 1枚で提案\", \"上司が判断できる資料\", \"Copilot導入の効果を示す\", or daily workplace improvement prompt creation. This skill is intentionally narrow and should not be used for general writing, research, coding, or visual prompts."
 ---
 
 # Business Improvement Prompt Builder

@@ -1,6 +1,6 @@
 ---
 name: prompt-work-report
-description: Create copy-ready prompts for workplace reports, status updates, handoffs, and internal sharing messages. Use this skill when the user asks for prompts about "業務報告", "進捗報告", "上司への報告文", "共有文", "引き継ぎ", "今日やったことをまとめる", or making work status clear for a supervisor or team. This skill is intentionally narrow and should not be used for research, public articles, coding tasks, or improvement proposals.
+description: "業務報告・進捗共有用のプロンプトを作るスキル。 Create copy-ready prompts for workplace reports, status updates, handoffs, and internal sharing messages. Use this skill when the user asks for prompts about \"業務報告\", \"進捗報告\", \"上司への報告文\", \"共有文\", \"引き継ぎ\", \"今日やったことをまとめる\", or making work status clear for a supervisor or team. This skill is intentionally narrow and should not be used for research, public articles, coding tasks, or improvement proposals."
 ---
 
 # Workplace Report Prompt Builder

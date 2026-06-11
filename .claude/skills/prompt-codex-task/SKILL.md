@@ -1,6 +1,6 @@
 ---
 name: prompt-codex-task
-description: Create copy-ready prompts for Codex coding tasks such as bug fixes, feature implementation, refactors, tests, code review, and repository investigation. Use this skill when the user asks for prompts about "Codexに頼む", "バグ修正", "実装依頼", "リファクタ", "テスト追加", "既存コードを見て", "PRレビュー", or asking Codex to work in a local repo. This skill is intentionally narrow and should not be used for general ChatGPT writing or research prompts.
+description: "Codexなどコーディングエージェントへのタスク依頼プロンプトを作るスキル。 Create copy-ready prompts for Codex coding tasks such as bug fixes, feature implementation, refactors, tests, code review, and repository investigation. Use this skill when the user asks for prompts about \"Codexに頼む\", \"バグ修正\", \"実装依頼\", \"リファクタ\", \"テスト追加\", \"既存コードを見て\", \"PRレビュー\", or asking Codex to work in a local repo. This skill is intentionally narrow and should not be used for general ChatGPT writing or research prompts."
 ---
 
 # Codex Task Prompt Builder

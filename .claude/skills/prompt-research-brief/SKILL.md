@@ -1,6 +1,6 @@
 ---
 name: prompt-research-brief
-description: Create copy-ready prompts for source-aware research briefs, comparisons, and investigation summaries. Use this skill when the user asks for prompts about "調査", "リサーチ", "比較", "市場調査", "最新情報", "根拠付きでまとめる", "メリット・デメリット", or decision-ready research. This skill is intentionally narrow and should not be used for writing drafts, coding tasks, or workplace reports.
+description: "調査・比較ブリーフ用のプロンプトを作るスキル。 Create copy-ready prompts for source-aware research briefs, comparisons, and investigation summaries. Use this skill when the user asks for prompts about \"調査\", \"リサーチ\", \"比較\", \"市場調査\", \"最新情報\", \"根拠付きでまとめる\", \"メリット・デメリット\", or decision-ready research. This skill is intentionally narrow and should not be used for writing drafts, coding tasks, or workplace reports."
 ---
 
 # Research Brief Prompt Builder

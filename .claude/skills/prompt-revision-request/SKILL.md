@@ -1,6 +1,6 @@
 ---
 name: prompt-revision-request
-description: Create copy-ready prompts for improving an existing draft, output, prompt, proposal, message, or document. Use this skill when the user asks for prompts about "改善して", "添削して", "ブラッシュアップ", "リライト", "もっと良くする", "既存文を直す", "出力を改善", "プロンプトを改善", or making an existing artifact clearer, stronger, shorter, more persuasive, or more professional. This skill is intentionally narrow and should not be used to create a new draft from scratch.
+description: "既存の文章・成果物の改善依頼用プロンプトを作るスキル。 Create copy-ready prompts for improving an existing draft, output, prompt, proposal, message, or document. Use this skill when the user asks for prompts about \"改善して\", \"添削して\", \"ブラッシュアップ\", \"リライト\", \"もっと良くする\", \"既存文を直す\", \"出力を改善\", \"プロンプトを改善\", or making an existing artifact clearer, stronger, shorter, more persuasive, or more professional. This skill is intentionally narrow and should not be used to create a new draft from scratch."
 ---
 
 # Revision Request Prompt Builder

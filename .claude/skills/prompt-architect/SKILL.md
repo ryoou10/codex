@@ -1,6 +1,6 @@
 ---
 name: prompt-architect
-description: Route prompt-creation requests to the most specific prompt-building child skill, then ensure the final prompt is copy-ready. Use this skill whenever the user asks for prompt creation, prompt refinement, prompt wall-bouncing, "プロンプト作成", "壁打ち", "一度で質のいい条件", "あなたは〇〇に特化した〇〇のプロフェッショナルです", or wants a prompt that makes ChatGPT or Codex produce a target output. This is the parent router skill; prefer a narrower child skill whenever one matches the requested prompt type.
+description: "プロンプト作成依頼を最適な子スキルへ振り分ける親スキル。 Route prompt-creation requests to the most specific prompt-building child skill, then ensure the final prompt is copy-ready. Use this skill whenever the user asks for prompt creation, prompt refinement, prompt wall-bouncing, \"プロンプト作成\", \"壁打ち\", \"一度で質のいい条件\", \"あなたは〇〇に特化した〇〇のプロフェッショナルです\", or wants a prompt that makes ChatGPT or Codex produce a target output. This is the parent router skill; prefer a narrower child skill whenever one matches the requested prompt type."
 ---
 
 # Prompt Architect

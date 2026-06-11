@@ -1,6 +1,6 @@
 ---
 name: imagegen-auto-director
-description: Convert local or attached reference images plus optional user conditions into polished image-generation specs, then generate or edit bitmap images through an available image-generation tool, or deliver the finalized spec when none is configured. Use when the user wants automated image generation from image files, reference images, rough visual ideas, or a six-part condition set covering subject, scene, style, composition, lighting/color, and quality, especially when unspecified fields should be creatively filled instead of repeatedly questioned.
+description: "参照画像と条件から画像生成スペックを自動構成するスキル。 Convert local or attached reference images plus optional user conditions into polished image-generation specs, then generate or edit bitmap images through an available image-generation tool, or deliver the finalized spec when none is configured. Use when the user wants automated image generation from image files, reference images, rough visual ideas, or a six-part condition set covering subject, scene, style, composition, lighting/color, and quality, especially when unspecified fields should be creatively filled instead of repeatedly questioned."
 ---
 
 # Imagegen Auto Director
